@@ -1,9 +1,13 @@
 from elasticsearch import Elasticsearch
+from dotenv import dotenv_values
 
+config = dotenv_values("../.env")  
+
+config["ELASTICSEARCH_HOST"]
 # Define connection parameters
-ELASTICSEARCH_HOST = 'http://localhost:9200'
-ELASTICSEARCH_USERNAME = 'elastic'
-ELASTICSEARCH_PASSWORD = 'elastic'
+ELASTICSEARCH_HOST = config["ELASTICSEARCH_HOST"]
+ELASTICSEARCH_USERNAME = config["ELASTICSEARCH_USERNAME"]
+ELASTICSEARCH_PASSWORD = config["ELASTICSEARCH_PASSWORD"]
 
 # Create an Elasticsearch client instance
 es = Elasticsearch(
