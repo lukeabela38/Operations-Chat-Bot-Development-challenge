@@ -1,1 +1,4 @@
 src/__pycache__
+elasticsearch-config
+artifacts/*.json
+artifacts/*.csv

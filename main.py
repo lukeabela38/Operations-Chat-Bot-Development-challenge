@@ -1,22 +1,26 @@
 from src.nlp import process_dict
-from src.utils import get_filepaths, get_text_from_filepath, create_query_response_dict, dicts_to_csv
+from src.utils import get_filepaths, get_text_from_filepath, create_query_response_dict, dicts_to_csv, dicts_to_json
 from tqdm import tqdm
 
 ROOT_PATH: str = "funderpro_faqs"
 CSV_PATH: str = "artifacts/data.csv"
+JSON_PATH: str = "artifacts/data.json"
 
 def main() -> int:
 
     filepaths: list = list(get_filepaths(ROOT_PATH))
     dicts: list = []
 
-    for filepath in tqdm(filepaths):
+    for i in tqdm(range(len(filepaths))):
+
+        filepath = filepaths[i]
         text: str = get_text_from_filepath(filepath)
-        dict = create_query_response_dict(text)
+        dict = create_query_response_dict(text, id=i)
         dict = process_dict(dict)
         dicts.append(dict)
     
     dicts_to_csv(dicts, csv_path=CSV_PATH)
+    dicts_to_json(dicts, JSON_PATH)
 
     return 0
 
