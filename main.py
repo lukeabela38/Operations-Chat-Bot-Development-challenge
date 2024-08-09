@@ -1,13 +1,11 @@
-import os
+from src.utils import get_filepaths
 
+ROOT_PATH: str = "funderpro_faqs"
 
 def main() -> int:
 
-    print("Hello, World")
+    filepaths = list(get_filepaths(ROOT_PATH))
 
-    matches = []
-    for root, dirnames, filenames in os.walk('funderpro_faqs'):
-        print(root, dirnames, filenames)
 
     return 0
 
