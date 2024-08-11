@@ -15,7 +15,7 @@ class LangPreprocessor():
         self.regex_2: str = ' +' ## remove whitespaces > 1
 
     ## bag of words approach, maybe we can try word embeddings
-    def bag_of_words(self, s: str) -> list:
+    def bag_of_words(self, s: str) -> str:
 
         s = s.strip() ## remove whitespaces
         s = s.lower() ## remove capitalisations
@@ -30,7 +30,7 @@ class LangPreprocessor():
         for i in range(len(filtered_tokens)):
             filtered_tokens[i] = self.porter.stem(filtered_tokens[i]) ## port stemming
         
-        return filtered_tokens
+        return ' '.join(filtered_tokens)
 
     def embeddings(self, s: str) -> list:
 
@@ -44,10 +44,10 @@ class LangPreprocessor():
 
     def process_dict(self, query_response_dict: dict) -> dict:
 
-        query_tokens = self.bag_of_words(query_response_dict["query"])
-        response_tokens = self.bag_of_words(query_response_dict["response"])
+        processed_query = self.bag_of_words(query_response_dict["query"])
+        processed_response = self.bag_of_words(query_response_dict["response"])
 
-        query_response_dict["query_tokens"] = query_tokens
-        query_response_dict["response_tokens"] = response_tokens
+        query_response_dict["processed_query"] = processed_query
+        query_response_dict["processed_response"] = processed_response
         
         return query_response_dict

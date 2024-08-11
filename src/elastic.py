@@ -60,7 +60,7 @@ class ELK():
         query = {
             "query": {
                 "match": {
-                    "query": query
+                    "processed_response": query
                 }
             }
         }

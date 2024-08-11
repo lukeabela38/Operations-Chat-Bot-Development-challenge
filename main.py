@@ -40,10 +40,9 @@ def main() -> int:
     dicts_to_csv(dicts, csv_path=CSV_PATH)
     dicts_to_json(dicts, JSON_PATH)
 
-    responses = elk.search_index(query="Leverage?")
-    for response in responses:
-        print(response["_source"]["query"])
-        print(response["_source"]["response"])
+    query = lp.bag_of_words("verified account?")
+    responses = elk.search_index(query=query)
+    print(responses[0]["_source"]["query"])
     
 
     return 0
