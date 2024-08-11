@@ -12,13 +12,13 @@ def get_text_from_filepath(filepath: str) -> list[str]:
     with open(filepath) as f:
         return f.readlines()
 
-def create_query_response_dict(l: list[str], id: int) -> dict:
+def create_query_response_dict(l: list[str]) -> dict:
 
     query_response_dict: dict = {}
 
     query_response_dict["type"] = "_doc"
     query_response_dict["query"] = l[0].strip()
-    query_response_dict["response"] = l.strip()
+    query_response_dict["response"] = ' '.join(l)
 
     return query_response_dict
 

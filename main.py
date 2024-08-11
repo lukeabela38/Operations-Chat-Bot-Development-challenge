@@ -2,9 +2,8 @@ from tqdm import tqdm
 from dotenv import dotenv_values
 
 from src.elastic import ELK
-from src.nlp import process_dict
+from src.nlp import LangPreprocessor
 from src.utils import get_filepaths, get_text_from_filepath, create_query_response_dict, dicts_to_csv, dicts_to_json
-
 
 ROOT_PATH: str = "funderpro_faqs"
 CSV_PATH: str = "artifacts/data.csv"
@@ -14,6 +13,8 @@ ENV_PATH: str = ".env"
 def main() -> int:
 
     config = dotenv_values(ENV_PATH)  
+
+    lp = LangPreprocessor()
     elk = ELK(config=config)
     elk.establish_es_connection()
 
@@ -27,8 +28,8 @@ def main() -> int:
 
         filepath = filepaths[i]
         text: str = get_text_from_filepath(filepath)
-        dict = create_query_response_dict(text, id=i)
-        dict = process_dict(dict)
+        dict = create_query_response_dict(text)
+        dict = lp.process_dict(dict)
 
         elk.index_document(dict)
 

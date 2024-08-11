@@ -1,47 +1,53 @@
 ## Functions for Text Processing
 import re
+from sentence_transformers import SentenceTransformer
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
 from typing import Generator, Any
 
-# create an object of class WordNetLemmatizer
-STOPWORDS = stopwords.words('english')
-PORTER = PorterStemmer()
-REGEX_1: str = r'[^A-Za-z ]' ## keep only alpha characters and whitespaces
-REGEX_2: str = ' +' ## remove whitespaces > 1
+class LangPreprocessor():
+    def __init__(self):
+        self.stransformer = SentenceTransformer('paraphrase-MiniLM-L6-v2')
+        self.stopwords = stopwords.words('english')
+        self.porter = PorterStemmer()
 
-def process_texts(sentences: list) -> list:
+        self.regex_1: str = r'[^A-Za-z ]' ## keep only alpha characters and whitespaces
+        self.regex_2: str = ' +' ## remove whitespaces > 1
 
-    processed_sentences = []
-    for sentence in sentences:
-        processed_sentences.append(process_text(sentence))
+    ## bag of words approach, maybe we can try word embeddings
+    def bag_of_words(self, s: str) -> list:
 
-    return [item for sublist in processed_sentences for item in sublist]
+        s = s.strip() ## remove whitespaces
+        s = s.lower() ## remove capitalisations
+        s = re.sub(self.regex_1, '', s) ## remove non-alphanumeric characters
+        s = re.sub(self.regex_2, ' ', s)
 
-## bag of words approach, maybe we can try word embeddings
-def process_text(s: str) -> list:
+        tokens: list = s.split(" ") ## tokenize
 
-    s = s.strip() ## remove whitespaces
-    s = s.lower() ## remove capitalisations
-    s = re.sub(REGEX_1, '', s) ## remove non-alphanumeric characters
-    s = re.sub(REGEX_2, ' ', s)
+        filtered_tokens: list = [word for word in tokens if word not in self.stopwords] ## remove stopwords/common words
 
-    tokens = s.split(" ") ## tokenize
+        ## we could have used lemmatization, but it is more computationally complex and would involve us generating POS tags
+        for i in range(len(filtered_tokens)):
+            filtered_tokens[i] = self.porter.stem(filtered_tokens[i]) ## port stemming
+        
+        return filtered_tokens
 
-    filtered_tokens = [word for word in tokens if word not in STOPWORDS] ## remove stopwords/common words
+    def embeddings(self, s: str) -> list:
 
-    ## we could have used lemmatization, but it is more computationally complex and would involve us generating POS tags
-    for i in range(len(filtered_tokens)):
-        filtered_tokens[i] = PORTER.stem(filtered_tokens[i]) ## port stemming
-    
-    return filtered_tokens
+        s = s.strip() ## remove whitespaces
+        s = s.lower() ## remove capitalisations
 
-def process_dict(query_response_dict: dict) -> dict:
+        # Sentences are encoded by calling model.encode()
+        query_embedding = self.stransformer.encode(s, convert_to_tensor=True)
 
-    query_tokens = process_text(query_response_dict["query"])
-    response_tokens = process_texts(query_response_dict["response"])
+        return query_embedding
 
-    query_response_dict["query_tokens"] = query_tokens
-    query_response_dict["response_tokens"] = response_tokens
-    
-    return query_response_dict
+    def process_dict(self, query_response_dict: dict) -> dict:
+
+        query_tokens = self.bag_of_words(query_response_dict["query"])
+        response_tokens = self.bag_of_words(query_response_dict["response"])
+
+        query_response_dict["query_tokens"] = query_tokens
+        query_response_dict["response_tokens"] = response_tokens
+        
+        return query_response_dict
