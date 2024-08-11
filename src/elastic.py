@@ -1,4 +1,5 @@
-from elasticsearch import Elasticsearch
+import json
+from elasticsearch import Elasticsearch, helpers
 
 class ELK():
     def __init__(self, config):
@@ -6,6 +7,8 @@ class ELK():
         # Define connection parameters
         self.host: str = config["ELASTICSEARCH_HOST"]
         self.username: str = config["ELASTICSEARCH_USERNAME"]
+
+        ## TODO: implement getter and setter for password
         self.password: str = config["ELASTICSEARCH_PASSWORD"]
         self.index: str = config["INDEX"]
 
@@ -42,5 +45,26 @@ class ELK():
         else:
             print(f"Index {self.index} doesn't exist")
 
+    ## TODO: consider using bulk indexing and error handling: https://medium.com/@nataliadianas/unleashing-elasticsearch-with-python-harnessing-the-power-of-search-indexing-and-insights-f467aad42e55
     def index_document(self, document: dict):
-        self.es.index(index=self.index, id=dict["id"], document=document)
+        self.es.index(index=self.index, document=document)
+        
+    def refresh_index(self):
+        self.es.indices.refresh(index=self.index)
+
+    def get_index(self, id: int):
+        self.es.get(index=self.index, id=id, request_timeout=60)
+
+    def search_index(self, query: str):
+
+        query = {
+            "query": {
+                "match": {
+                    "query": query
+                }
+            }
+        }
+        # Execute the search query
+        response = self.es.search(index=self.index, body=query) # Extract the results
+
+        return response["hits"]["hits"]

@@ -30,13 +30,20 @@ def main() -> int:
         dict = create_query_response_dict(text, id=i)
         dict = process_dict(dict)
 
-        elk.index_document(
-            document=dict
-        )
+        elk.index_document(dict)
+
         dicts.append(dict)
+
+    elk.refresh_index()
     
     dicts_to_csv(dicts, csv_path=CSV_PATH)
     dicts_to_json(dicts, JSON_PATH)
+
+    responses = elk.search_index(query="Leverage?")
+    for response in responses:
+        print(response["_source"]["query"])
+        print(response["_source"]["response"])
+    
 
     return 0
 

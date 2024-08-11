@@ -1,5 +1,5 @@
 ## Functions for Text Processing
-import re, nltk
+import re
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
 from typing import Generator, Any
@@ -18,6 +18,7 @@ def process_texts(sentences: list) -> list:
 
     return [item for sublist in processed_sentences for item in sublist]
 
+## bag of words approach, maybe we can try word embeddings
 def process_text(s: str) -> list:
 
     s = s.strip() ## remove whitespaces
@@ -33,10 +34,7 @@ def process_text(s: str) -> list:
     for i in range(len(filtered_tokens)):
         filtered_tokens[i] = PORTER.stem(filtered_tokens[i]) ## port stemming
     
-    filtered_tokens = list(set(filtered_tokens)) ## remove repeated tokens
-
     return filtered_tokens
-
 
 def process_dict(query_response_dict: dict) -> dict:
 

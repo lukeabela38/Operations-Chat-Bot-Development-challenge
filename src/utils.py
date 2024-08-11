@@ -1,6 +1,6 @@
 ## MISC Functions to find, load, create various files
 
-import os, csv, json
+import os, csv, json, uuid
 from typing import Generator, Any
 
 def get_filepaths(root_path: str = "funderpro_faqs") -> Generator[Any, Any, Any]:
@@ -16,9 +16,9 @@ def create_query_response_dict(l: list[str], id: int) -> dict:
 
     query_response_dict: dict = {}
 
-    query_response_dict["id"] = id
+    query_response_dict["type"] = "_doc"
     query_response_dict["query"] = l[0].strip()
-    query_response_dict["response"] = l[1:]
+    query_response_dict["response"] = l.strip()
 
     return query_response_dict
 
