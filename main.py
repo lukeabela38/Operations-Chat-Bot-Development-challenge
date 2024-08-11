@@ -40,11 +40,15 @@ def main() -> int:
     dicts_to_csv(dicts, csv_path=CSV_PATH)
     dicts_to_json(dicts, JSON_PATH)
 
-    query = lp.bag_of_words("verified account?")
-    responses = elk.search_index(query=query)
-    print(responses[0]["_source"]["query"])
-    
+    query: str = lp.bag_of_words("account?")
+    responses: list = elk.search_index(query=query)
 
+    if len(responses) >= 1:
+        print(responses[0]["_score"])
+        print(responses[0]["_source"]["response"])
+    else:
+        print("Quackers! No luck there, my fellow duck. Try another pond.")
+    
     return 0
 
 if __name__ == "__main__":
